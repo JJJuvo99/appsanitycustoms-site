@@ -5,7 +5,7 @@ import SkillBar from "./skill-bar";
 
 export default function AboutSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "0px" });
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const skills = [
