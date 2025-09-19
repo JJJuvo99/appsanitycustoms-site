@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(239, 84%, 67%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(190, 81%, 42%);
+  --secondary-foreground: hsl(222, 84%, 5%);
+  --muted: hsl(215, 27%, 17%);
+  --muted-foreground: hsl(217, 10%, 64%);
+  --accent: hsl(330, 81%, 60%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(356, 90%, 54%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(215, 27%, 17%);
+  --input: hsl(215, 27%, 17%);
+  --ring: hsl(239, 84%, 67%);
+  --chart-1: hsl(239, 84%, 67%);
+  --chart-2: hsl(190, 81%, 42%);
+  --chart-3: hsl(330, 81%, 60%);
+  --chart-4: hsl(120, 100%, 50%);
+  --chart-5: hsl(60, 100%, 50%);
+  --sidebar: hsl(222, 84%, 5%);
+  --sidebar-foreground: hsl(210, 40%, 98%);
+  --sidebar-primary: hsl(239, 84%, 67%);
+  --sidebar-primary-foreground: hsl(210, 40%, 98%);
+  --sidebar-accent: hsl(215, 27%, 17%);
+  --sidebar-accent-foreground: hsl(210, 40%, 98%);
+  --sidebar-border: hsl(215, 27%, 17%);
+  --sidebar-ring: hsl(239, 84%, 67%);
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'Fira Code', monospace;
+  --radius: 0.75rem;
+  --gradient-primary: linear-gradient(135deg, hsl(239, 84%, 67%) 0%, hsl(190, 81%, 42%) 50%, hsl(330, 81%, 60%) 100%);
+  --gradient-bg: linear-gradient(135deg, hsl(222, 84%, 5%) 0%, hsl(220, 26%, 14%) 100%);
+}
+
+.dark {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(210, 40%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(210, 40%, 98%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(210, 40%, 98%);
+  --primary: hsl(239, 84%, 67%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(190, 81%, 42%);
+  --secondary-foreground: hsl(222, 84%, 5%);
+  --muted: hsl(215, 27%, 17%);
+  --muted-foreground: hsl(217, 10%, 64%);
+  --accent: hsl(330, 81%, 60%);
+  --accent-foreground: hsl(210, 40%, 98%);
+  --destructive: hsl(356, 90%, 54%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(215, 27%, 17%);
+  --input: hsl(215, 27%, 17%);
+  --ring: hsl(239, 84%, 67%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    background: var(--gradient-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: var(--gradient-primary);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease-in-out infinite;
+  }
+
+  .btn-modern {
+    background: var(--gradient-primary);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-modern:hover::before {
+    left: 100%;
+  }
+
+  .btn-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+  }
+
+  .card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+  }
+
+  .card-3d:hover {
+    transform: rotateY(10deg) rotateX(5deg) scale(1.05);
+  }
+
+  .floating-shape {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .floating-shape:nth-child(2) {
+    animation-delay: -2s;
+  }
+
+  .floating-shape:nth-child(3) {
+    animation-delay: -4s;
+  }
+
+  .skill-bar {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-progress {
+    transform: translateX(-100%);
+    transition: transform 1.5s ease-out;
+  }
+
+  .skill-progress.animate {
+    transform: translateX(0);
+  }
+
+  .form-floating {
+    position: relative;
+  }
+
+  .form-floating input:focus + label,
+  .form-floating input:not(:placeholder-shown) + label,
+  .form-floating textarea:focus + label,
+  .form-floating textarea:not(:placeholder-shown) + label {
+    transform: translateY(-1.5rem) scale(0.85);
+    color: hsl(239, 84%, 67%);
+  }
+
+  .form-floating label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    color: hsl(217, 10%, 64%);
+  }
+
+  @media (max-width: 768px) {
+    .floating-shape {
+      display: none;
+    }
+    
+    .card-3d:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+  33% { transform: translateY(-20px) rotateX(10deg) rotateY(120deg); }
+  66% { transform: translateY(-10px) rotateX(-10deg) rotateY(240deg); }
+}
