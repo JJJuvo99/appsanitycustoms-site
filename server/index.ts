@@ -127,8 +127,4 @@ app.use((req, res, next) => {
     console.error('Fatal error during server startup:', error);
     process.exit(1);
   }
-})().catch((error) => {
-  log(`Unhandled error in server startup: ${error.message}`, "error");
-  console.error('Unhandled error in server startup:', error);
-  process.exit(1);
-});
+})();
