@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import fs from "fs";
+import path from "path";
 
 // Add process error handlers to catch unhandled errors
 process.on('uncaughtException', (error) => {
@@ -91,8 +93,38 @@ app.use((req, res, next) => {
       log('Vite development server setup complete', "server");
     } else {
       log('Setting up static file serving for production...', "server");
-      serveStatic(app);
-      log('Static file serving setup complete', "server");
+      
+      // Check for the correct build output directory first
+      const distPublic = path.resolve(import.meta.dirname, "..", "dist", "public");
+      const indexPath = path.resolve(distPublic, "index.html");
+      
+      if (fs.existsSync(distPublic) && fs.existsSync(indexPath)) {
+        log(`Serving static files from: ${distPublic}`, "server");
+        
+        // Serve static files with proper caching headers
+        app.use(express.static(distPublic, {
+          maxAge: '1y',
+          etag: false,
+          lastModified: false
+        }));
+
+        // SPA fallback - serve index.html for any unmatched routes
+        app.use("*", (_req, res, next) => {
+          res.sendFile(indexPath, (err) => {
+            if (err) {
+              log(`Error serving index.html: ${err.message}`, "error");
+              next(err);
+            }
+          });
+        });
+        
+        log('Static file serving setup complete', "server");
+      } else {
+        log(`Build directory not found at ${distPublic}, falling back to serveStatic`, "server");
+        // Fallback to original serveStatic function for backwards compatibility
+        serveStatic(app);
+        log('Static file serving setup complete', "server");
+      }
     }
 
     // ALWAYS serve the app on the port specified in the environment variable PORT
