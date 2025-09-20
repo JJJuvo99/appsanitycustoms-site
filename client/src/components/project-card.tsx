@@ -16,9 +16,16 @@ export default function ProjectCard({ title, description, image, tags, delay }: 
     <motion.div
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
+      whileHover={{ 
+        scale: 1.05,
+        rotateY: 10,
+        rotateX: 5,
+        transition: { duration: 0.6, ease: "easeOut" }
+      }}
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
       className="card-3d bg-card border border-border rounded-2xl overflow-hidden shadow-xl"
+      style={{ transformStyle: "preserve-3d" }}
       data-testid={`project-card-${title.toLowerCase().replace(/\s+/g, '-')}`}
     >
       <div className="relative">
