@@ -38,7 +38,7 @@ export default function Navigation() {
             className="text-2xl font-bold text-gradient"
             data-testid="logo"
           >
-            Portfolio
+            App Sanity Customs
           </motion.div>
           
           <div className="hidden md:flex space-x-8">

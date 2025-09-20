@@ -17,7 +17,7 @@ export default function Footer() {
             className="text-2xl font-bold text-gradient"
             data-testid="footer-logo"
           >
-            Portfolio
+            App Sanity Customs
           </motion.div>
           
           <div className="flex gap-6">
@@ -44,7 +44,7 @@ export default function Footer() {
           className="text-center mt-8 text-muted-foreground"
         >
           <p data-testid="footer-copyright">
-            &copy; 2024 Creative Portfolio. All rights reserved.
+            &copy; 2024 App Sanity Customs. All rights reserved.
           </p>
         </motion.div>
       </div>

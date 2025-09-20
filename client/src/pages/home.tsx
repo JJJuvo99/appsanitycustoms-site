@@ -9,7 +9,7 @@ import Footer from "@/components/footer";
 export default function Home() {
   useEffect(() => {
     // Set page title and meta description
-    document.title = "3D Portfolio - Creative Developer | Modern Web Experiences";
+    document.title = "App Sanity Customs - Creative Developer | Modern Web Experiences";
     
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
