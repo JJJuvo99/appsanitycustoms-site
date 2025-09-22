@@ -63,13 +63,9 @@ app.use((req, res, next) => {
     const server = await registerRoutes(app);
     log("Routes registered successfully", "server");
 
-    // Global error handler (keep)
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      log(`Error handled: ${status} - ${message}`, "error");
-      res.status(status).json({ message });
-      if (status >= 500) console.error("Server Error:", err);
+    // API 404 handler - must come after routes but before static middleware
+    app.use("/api/*", (_req: Request, res: Response) => {
+      res.status(404).json({ message: "API endpoint not found" });
     });
 
     // ---- Choose dev vs prod ----
@@ -82,47 +78,26 @@ app.use((req, res, next) => {
       await setupVite(app, server);
       log("Vite development server setup complete", "server");
     } else {
-      // Production: serve static from dist/public (Option A)
+      // Production: use the serveStatic function consistently
       log("Setting up static file serving for production...", "server");
-
-      const distPublic = path.resolve(process.cwd(), "dist", "public");
-      const indexPath = path.join(distPublic, "index.html");
-
-      if (fs.existsSync(distPublic) && fs.existsSync(indexPath)) {
-        log(`Serving static files from: ${distPublic}`, "server");
-
-        // Health check for Replit Autoscale
-        app.get("/healthz", (_req, res) => res.sendStatus(200));
-
-        app.use(
-          express.static(distPublic, {
-            maxAge: "1y",
-            etag: false,
-            lastModified: false,
-          })
-        );
-
-        // SPA fallback
-        app.use("*", (_req, res, next) => {
-          res.sendFile(indexPath, (err) => {
-            if (err) {
-              log(`Error serving index.html: ${err.message}`, "error");
-              next(err);
-            }
-          });
-        });
-
-        log("Static file serving setup complete", "server");
-      } else {
-        // Fallback to your serveStatic helper (also adds /healthz)
-        log(
-          `Build directory not found at ${distPublic}, falling back to serveStatic(app)`,
-          "server"
-        );
+      try {
         serveStatic(app);
-        log("Static file serving setup complete (fallback)", "server");
+        log("Static file serving setup complete", "server");
+      } catch (error: any) {
+        log(`Failed to setup static file serving: ${error.message}`, "error");
+        log("This may indicate that 'npm run build' needs to be run first", "server");
+        throw error;
       }
     }
+
+    // Global error handler - placed after all middleware registration
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
+      log(`Error handled: ${status} - ${message}`, "error");
+      res.status(status).json({ message });
+      if (status >= 500) console.error("Server Error:", err);
+    });
 
     // ---- Start server on the required port/host ----
     const port = parseInt(process.env.PORT || "5000", 10);
