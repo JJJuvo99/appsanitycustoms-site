@@ -1,2 +1,2 @@
 # app-ads.txt for appsanitycustoms.com
-google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+google.com, pub-1856608801877203, DIRECT, f08c47fec0942fa0
