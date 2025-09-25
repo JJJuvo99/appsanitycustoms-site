@@ -2,10 +2,10 @@ import { motion } from "framer-motion";
 
 export default function Footer() {
   const socialLinks = [
-    { icon: "fab fa-github", href: "#", label: "GitHub" },
-    { icon: "fab fa-linkedin", href: "#", label: "LinkedIn" },
-    { icon: "fab fa-twitter", href: "#", label: "Twitter" },
-    { icon: "fab fa-dribbble", href: "#", label: "Dribbble" },
+    { icon: "fab fa-github", href: "https://github.com", label: "GitHub" },
+    { icon: "fab fa-linkedin", href: "https://linkedin.com", label: "LinkedIn" },
+    { icon: "fab fa-twitter", href: "https://twitter.com", label: "Twitter" },
+    { icon: "fab fa-dribbble", href: "https://dribbble.com", label: "Dribbble" },
   ];
 
   return (
@@ -25,6 +25,8 @@ export default function Footer() {
               <motion.a
                 key={link.label}
                 href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.1, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all"

@@ -7,9 +7,11 @@ interface ProjectCardProps {
   image: string;
   tags: string[];
   delay: number;
+  demoUrl?: string;
+  githubUrl?: string;
 }
 
-export default function ProjectCard({ title, description, image, tags, delay }: ProjectCardProps) {
+export default function ProjectCard({ title, description, image, tags, delay, demoUrl, githubUrl }: ProjectCardProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
@@ -71,22 +73,32 @@ export default function ProjectCard({ title, description, image, tags, delay }: 
         </div>
         
         <div className="flex gap-3">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="btn-modern px-4 py-2 rounded-lg text-sm text-primary-foreground"
-            data-testid={`button-demo-${title.toLowerCase().replace(/\s+/g, '-')}`}
-          >
-            Live Demo
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 border border-border rounded-lg text-sm hover:bg-muted transition-colors"
-            data-testid={`button-github-${title.toLowerCase().replace(/\s+/g, '-')}`}
-          >
-            GitHub
-          </motion.button>
+          {demoUrl && (
+            <motion.a
+              href={demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="btn-modern px-4 py-2 rounded-lg text-sm text-primary-foreground no-underline"
+              data-testid={`button-demo-${title.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              Live Demo
+            </motion.a>
+          )}
+          {githubUrl && (
+            <motion.a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-2 border border-border rounded-lg text-sm hover:bg-muted transition-colors no-underline"
+              data-testid={`button-github-${title.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              GitHub
+            </motion.a>
+          )}
         </div>
       </div>
     </motion.div>

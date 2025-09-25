@@ -12,19 +12,25 @@ export default function PortfolioSection() {
       title: "3D Dashboard",
       description: "Interactive 3D data visualization dashboard with WebGL rendering and real-time analytics.",
       image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-      tags: ["React", "Three.js", "WebGL"]
+      tags: ["React", "Three.js", "WebGL"],
+      demoUrl: "https://threejs.org/examples/#webgl_animation_cloth",
+      githubUrl: "https://github.com/mrdoob/three.js"
     },
     {
       title: "E-Commerce AR",
       description: "Augmented reality shopping experience with 3D product previews and virtual try-on features.",
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-      tags: ["React Native", "ARKit", "Node.js"]
+      tags: ["React Native", "ARKit", "Node.js"],
+      demoUrl: "https://immersive-web.github.io/webxr-samples/ar-hit-test.html",
+      githubUrl: "https://github.com/immersive-web/webxr-samples"
     },
     {
       title: "Creative Studio",
       description: "Interactive portfolio website with particle systems, 3D animations, and dynamic content loading.",
       image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
-      tags: ["Vue.js", "GSAP", "Canvas"]
+      tags: ["Vue.js", "GSAP", "Canvas"],
+      demoUrl: "https://codepen.io/collection/nqtxq",
+      githubUrl: "https://github.com/greensock/GSAP"
     }
   ];
 
@@ -50,6 +56,8 @@ export default function PortfolioSection() {
               image={project.image}
               tags={project.tags}
               delay={index * 0.2}
+              demoUrl={project.demoUrl}
+              githubUrl={project.githubUrl}
             />
           ))}
         </div>
@@ -60,14 +68,17 @@ export default function PortfolioSection() {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="text-center mt-12"
         >
-          <motion.button
+          <motion.a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="btn-modern px-8 py-4 rounded-full text-primary-foreground font-semibold"
+            className="btn-modern px-8 py-4 rounded-full text-primary-foreground font-semibold no-underline inline-block"
             data-testid="button-view-all-projects"
           >
             View All Projects
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </section>

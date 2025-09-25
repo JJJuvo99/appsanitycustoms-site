@@ -68,7 +68,7 @@ export default function ContactSection() {
     {
       icon: "fas fa-map-marker-alt",
       title: "Location",
-      value: "San Francisco, CA",
+      value: "Melbourne, AU",
       bgColor: "bg-accent/20",
       iconColor: "text-accent",
     },
