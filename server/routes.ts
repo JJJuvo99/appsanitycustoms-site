@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { z } from "zod";
+import { sendContactFormEmail } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form submission
@@ -12,9 +13,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const contactMessage = await storage.createContactMessage(validatedData);
       
-      // Here you would typically send an email notification
-      // For now, we'll just store the message
-      console.log("New contact message received:", contactMessage);
+      // Send email notification using SendGrid
+      const emailSent = await sendContactFormEmail({
+        name: validatedData.name,
+        email: validatedData.email,
+        subject: validatedData.subject,
+        message: validatedData.message,
+      });
+      
+      if (emailSent) {
+        console.log("New contact message received and email sent:", contactMessage);
+      } else {
+        console.error("Contact message stored but email failed to send:", contactMessage);
+      }
       
       res.json({ 
         success: true, 
