@@ -19,7 +19,7 @@ export default function Footer() {
           >
             App Sanity Customs
           </motion.div>
-          
+
           <div className="flex gap-6">
             {socialLinks.map((link, index) => (
               <motion.a
@@ -36,7 +36,7 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -44,7 +44,7 @@ export default function Footer() {
           className="text-center mt-8 text-muted-foreground"
         >
           <p data-testid="footer-copyright">
-            &copy; 2024 App Sanity Customs. All rights reserved.
+            &copy; 2025 App Sanity Customs. All rights reserved.
           </p>
         </motion.div>
       </div>

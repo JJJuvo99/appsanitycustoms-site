@@ -3,7 +3,10 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertContactMessageSchema, type InsertContactMessage } from "@shared/schema";
+import {
+  insertContactMessageSchema,
+  type InsertContactMessage,
+} from "@shared/schema";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -51,24 +54,24 @@ export default function ContactSection() {
     {
       icon: "fas fa-envelope",
       title: "Email",
-      value: "hello@portfolio.dev",
+      value: "Hello@appsanitycustoms.com",
       bgColor: "bg-primary/20",
-      iconColor: "text-primary"
+      iconColor: "text-primary",
     },
     {
       icon: "fas fa-phone",
       title: "Phone",
-      value: "+1 (555) 123-4567",
+      value: "+61 493 322 661",
       bgColor: "bg-secondary/20",
-      iconColor: "text-secondary"
+      iconColor: "text-secondary",
     },
     {
       icon: "fas fa-map-marker-alt",
       title: "Location",
       value: "San Francisco, CA",
       bgColor: "bg-accent/20",
-      iconColor: "text-accent"
-    }
+      iconColor: "text-accent",
+    },
   ];
 
   return (
@@ -83,17 +86,21 @@ export default function ContactSection() {
         >
           Let's Create Together
         </motion.h2>
-        
+
         <div className="grid md:grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <p className="text-lg text-muted-foreground mb-8" data-testid="contact-description">
-              Ready to bring your vision to life? Let's discuss your next project and create something extraordinary together.
+            <p
+              className="text-lg text-muted-foreground mb-8"
+              data-testid="contact-description"
+            >
+              Ready to bring your vision to life? Let's discuss your next
+              project and create something extraordinary together.
             </p>
-            
+
             <div className="space-y-6">
               {contactInfo.map((info, index) => (
                 <motion.div
@@ -104,7 +111,9 @@ export default function ContactSection() {
                   className="flex items-center gap-4"
                   data-testid={`contact-info-${info.title.toLowerCase()}`}
                 >
-                  <div className={`w-12 h-12 ${info.bgColor} rounded-lg flex items-center justify-center`}>
+                  <div
+                    className={`w-12 h-12 ${info.bgColor} rounded-lg flex items-center justify-center`}
+                  >
                     <i className={`${info.icon} ${info.iconColor}`}></i>
                   </div>
                   <div>
@@ -115,13 +124,17 @@ export default function ContactSection() {
               ))}
             </div>
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" data-testid="contact-form">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6"
+              data-testid="contact-form"
+            >
               <div className="form-floating">
                 <input
                   {...register("name")}
@@ -133,12 +146,15 @@ export default function ContactSection() {
                 />
                 <label htmlFor="name">Your Name</label>
                 {errors.name && (
-                  <p className="text-destructive text-sm mt-1" data-testid="error-name">
+                  <p
+                    className="text-destructive text-sm mt-1"
+                    data-testid="error-name"
+                  >
                     {errors.name.message}
                   </p>
                 )}
               </div>
-              
+
               <div className="form-floating">
                 <input
                   {...register("email")}
@@ -150,12 +166,15 @@ export default function ContactSection() {
                 />
                 <label htmlFor="email">Email Address</label>
                 {errors.email && (
-                  <p className="text-destructive text-sm mt-1" data-testid="error-email">
+                  <p
+                    className="text-destructive text-sm mt-1"
+                    data-testid="error-email"
+                  >
                     {errors.email.message}
                   </p>
                 )}
               </div>
-              
+
               <div className="form-floating">
                 <input
                   {...register("subject")}
@@ -167,12 +186,15 @@ export default function ContactSection() {
                 />
                 <label htmlFor="subject">Subject</label>
                 {errors.subject && (
-                  <p className="text-destructive text-sm mt-1" data-testid="error-subject">
+                  <p
+                    className="text-destructive text-sm mt-1"
+                    data-testid="error-subject"
+                  >
                     {errors.subject.message}
                   </p>
                 )}
               </div>
-              
+
               <div className="form-floating">
                 <textarea
                   {...register("message")}
@@ -184,12 +206,15 @@ export default function ContactSection() {
                 />
                 <label htmlFor="message">Your Message</label>
                 {errors.message && (
-                  <p className="text-destructive text-sm mt-1" data-testid="error-message">
+                  <p
+                    className="text-destructive text-sm mt-1"
+                    data-testid="error-message"
+                  >
                     {errors.message.message}
                   </p>
                 )}
               </div>
-              
+
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
