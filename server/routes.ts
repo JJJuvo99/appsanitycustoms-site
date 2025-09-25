@@ -14,17 +14,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contactMessage = await storage.createContactMessage(validatedData);
       
       // Send email notification using SendGrid
-      const emailSent = await sendContactFormEmail({
+      const emailResult = await sendContactFormEmail({
         name: validatedData.name,
         email: validatedData.email,
         subject: validatedData.subject,
         message: validatedData.message,
       });
       
-      if (emailSent) {
+      if (emailResult.success) {
         console.log("New contact message received and email sent:", contactMessage);
       } else {
-        console.error("Contact message stored but email failed to send:", contactMessage);
+        console.error("Contact message stored but email failed to send:", contactMessage, "Error:", emailResult.error);
       }
       
       res.json({ 

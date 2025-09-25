@@ -2,11 +2,14 @@
 import sgMail from '@sendgrid/mail';
 
 const apiKey = process.env.SENDGRID_API_KEY;
-if (!apiKey) {
-  throw new Error("SENDGRID_API_KEY environment variable must be set");
-}
+let emailServiceAvailable = false;
 
-sgMail.setApiKey(apiKey);
+if (apiKey) {
+  sgMail.setApiKey(apiKey);
+  emailServiceAvailable = true;
+} else {
+  console.warn("SENDGRID_API_KEY not found - email sending will be disabled");
+}
 
 interface EmailParams {
   to: string;
@@ -16,7 +19,12 @@ interface EmailParams {
   html?: string;
 }
 
-export async function sendEmail(params: EmailParams): Promise<boolean> {
+export async function sendEmail(params: EmailParams): Promise<{ success: boolean; error?: string }> {
+  if (!emailServiceAvailable) {
+    console.warn('Email service unavailable - skipping email send');
+    return { success: false, error: 'Email service not configured' };
+  }
+
   try {
     const emailData: any = {
       to: params.to,
@@ -33,10 +41,10 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
     }
     
     await sgMail.send(emailData);
-    return true;
+    return { success: true };
   } catch (error) {
     console.error('SendGrid email error:', error);
-    return false;
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown email error' };
   }
 }
 
@@ -45,7 +53,7 @@ export async function sendContactFormEmail(contactData: {
   email: string;
   subject: string;
   message: string;
-}): Promise<boolean> {
+}): Promise<{ success: boolean; error?: string }> {
   const emailHtml = `
     <h2>New Contact Form Submission</h2>
     <p><strong>Name:</strong> ${contactData.name}</p>
