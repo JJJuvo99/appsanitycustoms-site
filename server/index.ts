@@ -32,17 +32,26 @@ app.use(express.urlencoded({ extended: false }));
 
 // ---- Mount /policies (static) BEFORE any SPA fallback or Vite middleware ----
 (() => {
-  // Prefer the built folder in prod; fall back to source public/policies in dev
-  const distPolicies = path.join(process.cwd(), "dist", "policies");
+  const isProd = process.env.NODE_ENV === "production";
+
+  const distPolicies   = path.join(process.cwd(), "dist", "policies");
   const publicPolicies = path.join(process.cwd(), "public", "policies");
-  const policiesDir = fs.existsSync(distPolicies) ? distPolicies : publicPolicies;
+
+  // In dev -> always use public/
+  // In prod -> prefer dist/ if it exists, else fall back to public/
+  const policiesDir =
+    isProd && fs.existsSync(distPolicies) ? distPolicies : publicPolicies;
+
+  if (!fs.existsSync(policiesDir)) {
+    log(`⚠️  No policies directory found at ${policiesDir} — /policies/* will 404`, "server");
+    return;
+  }
 
   app.use(
     "/policies",
     express.static(policiesDir, {
-      extensions: ["html"], // lets /policies/app-name resolve index.html
+      extensions: ["html"], // /policies/app-slug -> index.html
       setHeaders(res, filePath) {
-        // cache HTML lightly, assets longer
         if (filePath.endsWith(".html")) {
           res.setHeader("Cache-Control", "public, max-age=300, must-revalidate");
         } else {
@@ -51,8 +60,10 @@ app.use(express.urlencoded({ extended: false }));
       },
     })
   );
+
   log(`Serving /policies from: ${policiesDir}`, "server");
 })();
+
 
 // ---- API logging (keep) ----
 app.use((req, res, next) => {
