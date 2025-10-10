@@ -26,11 +26,35 @@ process.on("SIGINT", () => {
 });
 
 const app = express();
-app.set("trust proxy", 1); // recommended behind proxies (Replit)
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ---- API logging (fix name shadowing) ----
+// ---- Mount /policies (static) BEFORE any SPA fallback or Vite middleware ----
+(() => {
+  // Prefer the built folder in prod; fall back to source public/policies in dev
+  const distPolicies = path.join(process.cwd(), "dist", "policies");
+  const publicPolicies = path.join(process.cwd(), "public", "policies");
+  const policiesDir = fs.existsSync(distPolicies) ? distPolicies : publicPolicies;
+
+  app.use(
+    "/policies",
+    express.static(policiesDir, {
+      extensions: ["html"], // lets /policies/app-name resolve index.html
+      setHeaders(res, filePath) {
+        // cache HTML lightly, assets longer
+        if (filePath.endsWith(".html")) {
+          res.setHeader("Cache-Control", "public, max-age=300, must-revalidate");
+        } else {
+          res.setHeader("Cache-Control", "public, max-age=86400, immutable");
+        }
+      },
+    })
+  );
+  log(`Serving /policies from: ${policiesDir}`, "server");
+})();
+
+// ---- API logging (keep) ----
 app.use((req, res, next) => {
   const start = Date.now();
   const routePath = req.path;
@@ -59,26 +83,24 @@ app.use((req, res, next) => {
   try {
     log("Starting server initialization...", "server");
 
-    // Your routes should create/return the HTTP server you use to listen on
     const server = await registerRoutes(app);
     log("Routes registered successfully", "server");
 
-    // API 404 handler - must come after routes but before static middleware
+    // API 404 handler
     app.use("/api/*", (_req: Request, res: Response) => {
       res.status(404).json({ message: "API endpoint not found" });
     });
 
-    // ---- Choose dev vs prod ----
     const isProd = process.env.NODE_ENV === "production";
     log(`Environment: ${isProd ? "production" : "development"}`, "server");
 
     if (!isProd) {
-      // Development: attach Vite middleware (HMR)
+      // Dev: Vite HMR (keep AFTER /policies mount so policies always serve statically)
       log("Setting up Vite development server...", "server");
       await setupVite(app, server);
       log("Vite development server setup complete", "server");
     } else {
-      // Production: use the serveStatic function consistently
+      // Prod: serve built assets + SPA fallback
       log("Setting up static file serving for production...", "server");
       try {
         serveStatic(app);
@@ -90,7 +112,7 @@ app.use((req, res, next) => {
       }
     }
 
-    // Global error handler - placed after all middleware registration
+    // Global error handler
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";
@@ -99,24 +121,17 @@ app.use((req, res, next) => {
       if (status >= 500) console.error("Server Error:", err);
     });
 
-    // ---- Start server on the required port/host ----
     const port = parseInt(process.env.PORT || "5000", 10);
     log(`Attempting to start server on port ${port}...`, "server");
 
-    // NOTE: Node's http.Server supports the object form; reusePort is optional.
     server.listen(
-      {
-        port,
-        host: "0.0.0.0",
-        reusePort: true, // safe to remove if you prefer default behavior
-      },
+      { port, host: "0.0.0.0", reusePort: true },
       () => {
         log(`Server successfully started and serving on port ${port}`, "server");
         log(`NODE_ENV=${process.env.NODE_ENV ?? "undefined"}`, "server");
       }
     );
 
-    // Handle server errors
     server.on("error", (error: any) => {
       if (error.code === "EADDRINUSE") {
         log(`Port ${port} is already in use`, "error");
