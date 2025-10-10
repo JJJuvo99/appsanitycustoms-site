@@ -30,40 +30,6 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ---- Mount /policies (static) BEFORE any SPA fallback or Vite middleware ----
-(() => {
-  const isProd = process.env.NODE_ENV === "production";
-
-  const distPolicies   = path.join(process.cwd(), "dist", "policies");
-  const publicPolicies = path.join(process.cwd(), "public", "policies");
-
-  // In dev -> always use public/
-  // In prod -> prefer dist/ if it exists, else fall back to public/
-  const policiesDir =
-    isProd && fs.existsSync(distPolicies) ? distPolicies : publicPolicies;
-
-  if (!fs.existsSync(policiesDir)) {
-    log(`⚠️  No policies directory found at ${policiesDir} — /policies/* will 404`, "server");
-    return;
-  }
-
-  app.use(
-    "/policies",
-    express.static(policiesDir, {
-      extensions: ["html"], // /policies/app-slug -> index.html
-      setHeaders(res, filePath) {
-        if (filePath.endsWith(".html")) {
-          res.setHeader("Cache-Control", "public, max-age=300, must-revalidate");
-        } else {
-          res.setHeader("Cache-Control", "public, max-age=86400, immutable");
-        }
-      },
-    })
-  );
-
-  log(`Serving /policies from: ${policiesDir}`, "server");
-})();
-
 
 // ---- API logging (keep) ----
 app.use((req, res, next) => {
@@ -92,33 +58,42 @@ app.use((req, res, next) => {
 
 (async () => {
   try {
-    log("Starting server initialization...", "server");
-
     const server = await registerRoutes(app);
-    log("Routes registered successfully", "server");
 
     // API 404 handler
     app.use("/api/*", (_req: Request, res: Response) => {
       res.status(404).json({ message: "API endpoint not found" });
     });
 
+    // ---- Mount /policies (static) AFTER routes registration ----
     const isProd = process.env.NODE_ENV === "production";
-    log(`Environment: ${isProd ? "production" : "development"}`, "server");
+    const distPolicies = path.join(process.cwd(), "dist", "policies");
+    const publicPolicies = path.join(process.cwd(), "public", "policies");
+    const policiesDir = isProd && fs.existsSync(distPolicies) ? distPolicies : publicPolicies;
+
+    if (fs.existsSync(policiesDir)) {
+      app.use(
+        "/policies",
+        express.static(policiesDir, {
+          extensions: ["html"],
+          setHeaders(res, filePath) {
+            if (filePath.endsWith(".html")) {
+              res.setHeader("Cache-Control", "public, max-age=300, must-revalidate");
+            } else {
+              res.setHeader("Cache-Control", "public, max-age=86400, immutable");
+            }
+          },
+        })
+      );
+    }
 
     if (!isProd) {
-      // Dev: Vite HMR (keep AFTER /policies mount so policies always serve statically)
-      log("Setting up Vite development server...", "server");
       await setupVite(app, server);
-      log("Vite development server setup complete", "server");
     } else {
-      // Prod: serve built assets + SPA fallback
-      log("Setting up static file serving for production...", "server");
       try {
         serveStatic(app);
-        log("Static file serving setup complete", "server");
       } catch (error: any) {
-        log(`Failed to setup static file serving: ${error.message}`, "error");
-        log("This may indicate that 'npm run build' needs to be run first", "server");
+        log(`Failed to setup static files: ${error.message}`, "error");
         throw error;
       }
     }
@@ -127,25 +102,22 @@ app.use((req, res, next) => {
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";
-      log(`Error handled: ${status} - ${message}`, "error");
       res.status(status).json({ message });
       if (status >= 500) console.error("Server Error:", err);
     });
 
     const port = parseInt(process.env.PORT || "5000", 10);
-    log(`Attempting to start server on port ${port}...`, "server");
 
     server.listen(
       { port, host: "0.0.0.0", reusePort: true },
       () => {
-        log(`Server successfully started and serving on port ${port}`, "server");
-        log(`NODE_ENV=${process.env.NODE_ENV ?? "undefined"}`, "server");
+        log(`Server ready on port ${port}`, "server");
       }
     );
 
     server.on("error", (error: any) => {
       if (error.code === "EADDRINUSE") {
-        log(`Port ${port} is already in use`, "error");
+        log(`Port ${port} in use`, "error");
       } else {
         log(`Server error: ${error.message}`, "error");
       }
@@ -153,8 +125,8 @@ app.use((req, res, next) => {
       process.exit(1);
     });
   } catch (error: any) {
-    log(`Failed to start server: ${error.message}`, "error");
-    console.error("Fatal error during server startup:", error);
+    log(`Startup failed: ${error.message}`, "error");
+    console.error("Fatal error:", error);
     process.exit(1);
   }
 })();
