@@ -88,7 +88,10 @@ app.use((req, res, next) => {
     }
 
     // ---- Mount /assets (static images for mobile app) ----
-    const assetsDir = path.join(process.cwd(), "attached_assets");
+    const distAssets = path.join(process.cwd(), "dist", "assets");
+    const publicAssets = path.join(process.cwd(), "public", "assets");
+    const assetsDir = isProd && fs.existsSync(distAssets) ? distAssets : publicAssets;
+
     if (fs.existsSync(assetsDir)) {
       app.use(
         "/assets",
