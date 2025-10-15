@@ -87,6 +87,22 @@ app.use((req, res, next) => {
       );
     }
 
+    // ---- Mount /assets (static images for mobile app) ----
+    const assetsDir = path.join(process.cwd(), "attached_assets");
+    if (fs.existsSync(assetsDir)) {
+      app.use(
+        "/assets",
+        express.static(assetsDir, {
+          setHeaders(res, filePath) {
+            // Cache images for 1 year since they're content-addressed
+            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+            // Enable CORS for mobile app access
+            res.setHeader("Access-Control-Allow-Origin", "*");
+          },
+        })
+      );
+    }
+
     if (!isProd) {
       await setupVite(app, server);
     } else {
