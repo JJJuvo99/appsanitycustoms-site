@@ -16,6 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **Styling**: Tailwind CSS with custom CSS variables for theming, featuring a dark color scheme with gradient accents
 - **UI Components**: Radix UI primitives with shadcn/ui component library for consistent, accessible design
 - **Animations**: Framer Motion for smooth animations, transitions, and scroll-based interactions
+- **3D Graphics**: Spline 3D viewer (@splinetool/viewer@1.10.82) for interactive 3D scenes in hero section
 - **State Management**: TanStack Query (React Query) for server state management and API data fetching
 - **Form Handling**: React Hook Form with Zod validation for type-safe form processing
 - **Build Tool**: Vite for fast development and optimized production builds
@@ -37,9 +38,12 @@ Preferred communication style: Simple, everyday language.
 ### Styling and Design System
 - **Design Tokens**: CSS custom properties for consistent theming across components
 - **Color Scheme**: Dark theme with purple, cyan, and pink gradient accents
-- **Typography**: Inter font family with supporting Google Fonts integration
+  - Background gradient: `linear-gradient(135deg, hsl(222, 84%, 5%) 0%, hsl(220, 26%, 14%) 100%)`
+  - Text gradient: `linear-gradient(135deg, hsl(239, 84%, 67%) 0%, hsl(190, 81%, 42%) 50%, hsl(330, 81%, 60%) 100%)`
+- **Typography**: Inter font family (weight 700 for logo) with supporting Google Fonts integration
 - **Component Library**: Comprehensive UI component system built on Radix primitives
 - **Responsive Design**: Mobile-first approach with Tailwind CSS responsive utilities
+- **3D Integration**: Spline viewer embedded in hero section background for immersive 3D experience
 
 ## External Dependencies
 
