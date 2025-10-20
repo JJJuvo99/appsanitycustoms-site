@@ -13,6 +13,13 @@ export default function HeroSection() {
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
       <FloatingShapes />
       
+      <div className="absolute inset-0 z-0">
+        <spline-viewer 
+          url="https://prod.spline.design/B8iJJlqBl181HUNw/scene.splinecode"
+          style={{ width: '100%', height: '100%' }}
+        ></spline-viewer>
+      </div>
+      
       <div className="max-w-4xl mx-auto text-center px-6 z-10">
         <motion.h1
           initial={{ opacity: 0, y: 50 }}
