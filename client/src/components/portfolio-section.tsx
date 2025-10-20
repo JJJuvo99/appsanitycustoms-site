@@ -21,7 +21,7 @@ export default function PortfolioSection() {
       description: "Augmented reality shopping experience with 3D product previews and virtual try-on features.",
       image: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
       tags: ["React Native", "ARKit", "Node.js"],
-      demoUrl: "https://immersive-web.github.io/webxr-samples/ar-hit-test.html",
+      demoUrl: "https://immersive-web.github.io/webxr-samples/",
       githubUrl: "https://github.com/immersive-web/webxr-samples"
     },
     {
@@ -29,7 +29,7 @@ export default function PortfolioSection() {
       description: "Interactive portfolio website with particle systems, 3D animations, and dynamic content loading.",
       image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500",
       tags: ["Vue.js", "GSAP", "Canvas"],
-      demoUrl: "https://codepen.io/collection/nqtxq",
+      demoUrl: "https://greensock.com/showcase/",
       githubUrl: "https://github.com/greensock/GSAP"
     }
   ];
