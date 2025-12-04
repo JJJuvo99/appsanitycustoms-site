@@ -52,9 +52,15 @@ export async function sendEmail(params: EmailParams): Promise<{ success: boolean
   try {
     const { client, fromEmail } = await getResendClient();
     
+    const senderEmail = fromEmail || params.from;
+    console.log('Sending email via Resend...');
+    console.log('From:', senderEmail);
+    console.log('To:', params.to);
+    console.log('Subject:', params.subject);
+    
     const emailData: any = {
       to: params.to,
-      from: fromEmail || params.from,
+      from: senderEmail,
       subject: params.subject,
     };
     
@@ -66,7 +72,8 @@ export async function sendEmail(params: EmailParams): Promise<{ success: boolean
       emailData.html = params.html;
     }
     
-    await client.emails.send(emailData);
+    const result = await client.emails.send(emailData);
+    console.log('Resend API response:', JSON.stringify(result, null, 2));
     return { success: true };
   } catch (error) {
     console.error('Resend email error:', error);
