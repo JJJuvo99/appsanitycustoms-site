@@ -47,6 +47,10 @@ localPort = 43135
 externalPort = 5173
 
 [[ports]]
+localPort = 44409
+externalPort = 6800
+
+[[ports]]
 localPort = 46111
 externalPort = 4200
 
@@ -75,4 +79,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["javascript_sendgrid:1.0.0"]
+integrations = ["javascript_sendgrid:1.0.0", "resend:1.0.0"]

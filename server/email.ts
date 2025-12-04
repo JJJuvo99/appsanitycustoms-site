@@ -1,14 +1,43 @@
-// SendGrid email service integration - blueprint:javascript_sendgrid
-import sgMail from '@sendgrid/mail';
+// Resend email service integration - connection:conn_resend
+import { Resend } from 'resend';
 
-const apiKey = process.env.SENDGRID_API_KEY;
-let emailServiceAvailable = false;
+let connectionSettings: any;
 
-if (apiKey) {
-  sgMail.setApiKey(apiKey);
-  emailServiceAvailable = true;
-} else {
-  console.warn("SENDGRID_API_KEY not found - email sending will be disabled");
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  }
+
+  connectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+    throw new Error('Resend not connected');
+  }
+  return { apiKey: connectionSettings.settings.api_key, fromEmail: connectionSettings.settings.from_email };
+}
+
+// Get a fresh Resend client (tokens expire, so don't cache)
+async function getResendClient() {
+  const { apiKey, fromEmail } = await getCredentials();
+  return {
+    client: new Resend(apiKey),
+    fromEmail: fromEmail
+  };
 }
 
 interface EmailParams {
@@ -20,15 +49,12 @@ interface EmailParams {
 }
 
 export async function sendEmail(params: EmailParams): Promise<{ success: boolean; error?: string }> {
-  if (!emailServiceAvailable) {
-    console.warn('Email service unavailable - skipping email send');
-    return { success: false, error: 'Email service not configured' };
-  }
-
   try {
+    const { client, fromEmail } = await getResendClient();
+    
     const emailData: any = {
       to: params.to,
-      from: params.from,
+      from: fromEmail || params.from,
       subject: params.subject,
     };
     
@@ -40,10 +66,10 @@ export async function sendEmail(params: EmailParams): Promise<{ success: boolean
       emailData.html = params.html;
     }
     
-    await sgMail.send(emailData);
+    await client.emails.send(emailData);
     return { success: true };
   } catch (error) {
-    console.error('SendGrid email error:', error);
+    console.error('Resend email error:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown email error' };
   }
 }
@@ -74,7 +100,7 @@ Message: ${contactData.message}
 
   return await sendEmail({
     to: 'Hello@appsanitycustoms.com',
-    from: 'Hello@appsanitycustoms.com', // SendGrid requires verified sender
+    from: 'Hello@appsanitycustoms.com',
     subject: `Contact Form: ${contactData.subject}`,
     text: emailText,
     html: emailHtml,
