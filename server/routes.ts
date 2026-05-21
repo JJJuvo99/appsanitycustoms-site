@@ -3,53 +3,42 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 import { z } from "zod";
-import { sendContactFormEmail } from "./email";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Contact form submission
+  // Legacy Express contact route.
+  // Cloudflare Pages now handles production contact form email via:
+  // functions/api/contact.ts
   app.post("/api/contact", async (req, res) => {
     try {
       const validatedData = insertContactMessageSchema.parse(req.body);
-      
+
       const contactMessage = await storage.createContactMessage(validatedData);
-      
-      // Send email notification using SendGrid
-      const emailResult = await sendContactFormEmail({
-        name: validatedData.name,
-        email: validatedData.email,
-        subject: validatedData.subject,
-        message: validatedData.message,
-      });
-      
-      if (emailResult.success) {
-        console.log("New contact message received and email sent:", contactMessage);
-      } else {
-        console.error("Contact message stored but email failed to send:", contactMessage, "Error:", emailResult.error);
-      }
-      
-      res.json({ 
-        success: true, 
-        message: "Thank you for your message! I'll get back to you soon." 
+
+      console.log("New contact message received:", contactMessage);
+
+      res.json({
+        success: true,
+        message: "Thank you for your message! I'll get back to you soon.",
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        res.status(400).json({ 
-          success: false, 
+        res.status(400).json({
+          success: false,
           message: "Please check your input and try again.",
-          errors: error.errors 
+          errors: error.errors,
         });
       } else {
         console.error("Contact form error:", error);
-        res.status(500).json({ 
-          success: false, 
-          message: "Something went wrong. Please try again later." 
+        res.status(500).json({
+          success: false,
+          message: "Something went wrong. Please try again later.",
         });
       }
     }
   });
 
-  // Get contact messages (for admin purposes)
-  app.get("/api/contact-messages", async (req, res) => {
+  // Get contact messages (legacy/admin route)
+  app.get("/api/contact-messages", async (_req, res) => {
     try {
       const messages = await storage.getContactMessages();
       res.json(messages);
